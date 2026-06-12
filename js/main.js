@@ -1,4 +1,4 @@
-/* ============ Vardhaman Gold — interactions (shared across pages) ============ */
+/* ============ Vardhman Gold — interactions (shared across pages) ============ */
 (function () {
   'use strict';
 
@@ -34,10 +34,20 @@
   /* ---------- Header on scroll ---------- */
   var header = document.getElementById('header');
   if (header) {
+    // Stay transparent while the dark hero / page-hero is behind the header;
+    // switch to the light scrolled style only once it has scrolled past.
+    var darkSection = document.querySelector('.hero') || document.querySelector('.page-hero');
     var onScroll = function () {
-      header.classList.toggle('is-scrolled', window.scrollY > 40);
+      var scrolled;
+      if (darkSection) {
+        scrolled = darkSection.getBoundingClientRect().bottom <= header.offsetHeight;
+      } else {
+        scrolled = window.scrollY > 40;
+      }
+      header.classList.toggle('is-scrolled', scrolled);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
     onScroll();
   }
 
@@ -65,6 +75,46 @@
       });
     };
     walk(el);
+  });
+
+  /* ---------- Button hover ripple-fill effect ---------- */
+  document.querySelectorAll('.btn').forEach(function (btn) {
+    // Lift the button content above the fill layer
+    var label = document.createElement('span');
+    label.className = 'btn__label';
+    while (btn.firstChild) label.appendChild(btn.firstChild);
+    btn.appendChild(label);
+
+    var fill = document.createElement('span');
+    fill.className = 'btn__fill';
+    btn.appendChild(fill);
+
+    var placeFill = function (e) {
+      var rect = btn.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      // Circle diameter: twice the distance to the farthest corner,
+      // so the fill always covers the whole button from any entry point
+      var dx = Math.max(x, rect.width - x);
+      var dy = Math.max(y, rect.height - y);
+      var d = Math.sqrt(dx * dx + dy * dy) * 2;
+      fill.style.width = d + 'px';
+      fill.style.height = d + 'px';
+      fill.style.left = x + 'px';
+      fill.style.top = y + 'px';
+    };
+
+    btn.addEventListener('mouseenter', function (e) {
+      placeFill(e);
+      void fill.offsetWidth; // commit position before scaling up
+      btn.classList.add('is-hovered');
+    });
+
+    btn.addEventListener('mouseleave', function (e) {
+      placeFill(e);
+      void fill.offsetWidth; // commit position so it shrinks toward the exit point
+      btn.classList.remove('is-hovered');
+    });
   });
 
   /* ---------- Three.js golden particle field (home hero only) ---------- */
@@ -286,46 +336,36 @@
     });
   });
 
-  // Hero content drifts up slightly as you leave (home only)
+  // About: journey timeline — scrubbed progress line + sticky-year milestone reveals
+  if (document.querySelector('.journey')) {
+    var journeyLine = document.querySelector('.journey__line');
+    if (journeyLine) {
+      gsap.to(journeyLine, {
+        scaleY: 1, ease: 'none',
+        scrollTrigger: {
+          trigger: '.journey__track', start: 'top 75%', end: 'bottom 55%', scrub: true
+        }
+      });
+    }
+    gsap.utils.toArray('.journey__item').forEach(function (item) {
+      gsap.from(item.querySelector('.journey__year'), {
+        x: -28, opacity: 0, duration: 0.7, ease: 'power3.out',
+        scrollTrigger: { trigger: item, start: 'top 80%' }
+      });
+      gsap.from(item.querySelector('.journey__body'), {
+        y: 50, opacity: 0, duration: 0.9, ease: 'power3.out',
+        scrollTrigger: { trigger: item, start: 'top 78%' }
+      });
+    });
+  }
+
+  // Hero content drifts up slightly as you leave (home only) —
+  // starts only after 40% of the hero has scrolled past, so the headline
+  // doesn't fade while the dark hero section is still on screen
   if (document.querySelector('.hero')) {
     gsap.to('.hero__inner', {
       yPercent: -12, opacity: 0.4, ease: 'none',
-      scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }
+      scrollTrigger: { trigger: '.hero', start: '40% top', end: 'bottom top', scrub: true }
     });
   }
-  // Button hover ripple fill effect
-  document.querySelectorAll('.btn').forEach(function (btn) {
-    var textSpan = document.createElement('span');
-    textSpan.style.position = 'relative';
-    textSpan.style.zIndex = '2';
-    textSpan.style.pointerEvents = 'none';
-    textSpan.style.display = 'inline-block';
-    
-    while (btn.firstChild) {
-      textSpan.appendChild(btn.firstChild);
-    }
-    btn.appendChild(textSpan);
-
-    var fill = document.createElement('span');
-    fill.className = 'btn__fill';
-    btn.appendChild(fill);
-
-    btn.addEventListener('mouseenter', function (e) {
-      var rect = btn.getBoundingClientRect();
-      var x = e.clientX - rect.left;
-      var y = e.clientY - rect.top;
-      fill.style.left = x + 'px';
-      fill.style.top = y + 'px';
-      btn.classList.add('is-hovered');
-    });
-
-    btn.addEventListener('mouseleave', function (e) {
-      var rect = btn.getBoundingClientRect();
-      var x = e.clientX - rect.left;
-      var y = e.clientY - rect.top;
-      fill.style.left = x + 'px';
-      fill.style.top = y + 'px';
-      btn.classList.remove('is-hovered');
-    });
-  });
 })();

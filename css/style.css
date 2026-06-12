@@ -1,4 +1,4 @@
-/* ============ Vardhaman Gold — Landing ============ */
+/* ============ Vardhman Gold — Landing ============ */
 :root {
   --ink: #14110c;
   --ink-soft: #2a241a;
@@ -120,15 +120,19 @@ em { font-style: italic; color: var(--gold-deep); }
 .btn__fill {
   position: absolute;
   border-radius: 50%;
-  width: 300%;
-  aspect-ratio: 1;
   transform: translate(-50%, -50%) scale(0);
   z-index: 1;
   pointer-events: none;
-  transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .btn.is-hovered .btn__fill {
   transform: translate(-50%, -50%) scale(1);
+}
+.btn__label {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  pointer-events: none;
 }
 .btn--gold {
   background: linear-gradient(135deg, #e8c163, var(--gold-deep));
@@ -340,6 +344,107 @@ em { font-style: italic; color: var(--gold-deep); }
 .timeline strong { font-size: 1.05rem; }
 .timeline span { opacity: 0.75; font-size: 0.95rem; }
 
+/* ---------- Journey timeline (about) ---------- */
+.journey__track {
+  --rail: clamp(1.6rem, 4vw, 3rem);
+  position: relative;
+  display: grid; gap: clamp(4rem, 12vh, 7rem);
+  padding-left: var(--rail);
+  max-width: 64rem;
+}
+.journey__line {
+  position: absolute; left: 0; top: 0.4rem; bottom: 0.4rem; width: 2px;
+  background: linear-gradient(to bottom, var(--gold), var(--gold-deep));
+  transform-origin: top;
+}
+.js .journey__line { transform: scaleY(0); }
+.journey__item {
+  position: relative;
+  display: grid; grid-template-columns: minmax(9rem, 1fr) 2.2fr;
+  gap: clamp(1.5rem, 5vw, 4rem); align-items: start;
+}
+.journey__item::before {
+  content: ''; position: absolute; top: 0.5rem;
+  left: calc(var(--rail) * -1 - 5px);
+  width: 12px; height: 12px; border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #f2cf7a, var(--gold-deep));
+  box-shadow: 0 0 0 4px rgba(212, 162, 60, 0.2);
+}
+.journey__year {
+  position: sticky; top: clamp(6rem, 16vh, 9rem);
+  display: grid; gap: 0.5rem;
+}
+.journey__year-num {
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 7vw, 4.6rem); line-height: 1;
+  color: var(--gold-deep);
+}
+.journey__year-label {
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--green);
+}
+.journey__body {
+  background: #fff; border-radius: 1.25rem; padding: 2rem 1.8rem;
+  box-shadow: 0 16px 40px -24px rgba(20, 17, 12, 0.35);
+  display: grid; gap: 0.8rem; align-content: start;
+}
+.journey__body h3 {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: 1.35rem; line-height: 1.2;
+}
+.journey__body p { font-size: 0.98rem; opacity: 0.85; }
+
+/* ---------- People (about) ---------- */
+.people-grid {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem; max-width: 52rem;
+}
+.person-card {
+  background: #fff; border-radius: 1.5rem; padding: 2.2rem 2rem;
+  box-shadow: 0 16px 40px -24px rgba(20, 17, 12, 0.35);
+  display: grid; gap: 0.35rem; justify-items: start; align-content: start;
+}
+.person-card__photo {
+  width: 6.5rem; aspect-ratio: 1; border-radius: 50%;
+  display: grid; place-items: center; margin-bottom: 1rem;
+  background: radial-gradient(circle at 30% 30%, #f2cf7a, var(--gold-deep));
+  color: var(--ink); font-size: 0.7rem; font-weight: 800;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  box-shadow: 0 0 0 5px rgba(212, 162, 60, 0.2);
+}
+.person-card__name { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; }
+.person-card__role {
+  font-size: 0.75rem; font-weight: 800; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--green);
+}
+.person-card__bio { font-size: 0.95rem; opacity: 0.8; margin-top: 0.5rem; }
+
+/* ---------- Certificates (about) ---------- */
+.cert-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+.cert {
+  position: relative; background: #fffdf6;
+  border: 1px solid rgba(176, 127, 31, 0.5); border-radius: 0.5rem;
+  padding: 2.4rem 1.5rem 2rem; text-align: center;
+  display: grid; gap: 0.5rem; justify-items: center; align-content: start;
+  box-shadow: 0 16px 40px -24px rgba(20, 17, 12, 0.35);
+}
+.cert::before {
+  content: ''; position: absolute; inset: 8px; pointer-events: none;
+  border: 1px dashed rgba(176, 127, 31, 0.5); border-radius: 0.35rem;
+}
+.cert__seal {
+  width: 3.2rem; aspect-ratio: 1; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 800; color: var(--ink);
+  background: radial-gradient(circle at 30% 30%, #f2cf7a, var(--gold-deep));
+  box-shadow: 0 0 0 4px rgba(212, 162, 60, 0.25);
+}
+.cert h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; }
+.cert__num { font-size: 0.8rem; letter-spacing: 0.06em; opacity: 0.7; }
+.cert__hint {
+  font-size: 0.68rem; font-weight: 800; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--green); margin-top: 0.5rem;
+}
+
 /* ---------- About ---------- */
 .about__grid {
   display: grid; grid-template-columns: 1.2fr 1fr;
@@ -495,6 +600,8 @@ em { font-style: italic; color: var(--gold-deep); }
   .product--daal .product__media { order: 0; }
   .process__steps, .stats__grid { grid-template-columns: repeat(2, 1fr); }
   .voices__grid, .card-grid { grid-template-columns: 1fr; }
+  .people-grid { grid-template-columns: 1fr; }
+  .cert-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 700px) {
   .header__nav {
@@ -511,6 +618,8 @@ em { font-style: italic; color: var(--gold-deep); }
   .hero__scroll { display: none; }
   .process__steps, .stats__grid { grid-template-columns: 1fr; }
   .stats__grid { gap: 2.5rem; }
+  .journey__item { grid-template-columns: 1fr; gap: 1.2rem; }
+  .journey__year { position: static; }
   .footer { flex-direction: column; align-items: center; text-align: center; }
 }
 @media (max-width: 480px) {
@@ -524,6 +633,7 @@ em { font-style: italic; color: var(--gold-deep); }
   .stats, .footer { padding-left: 1.1rem; padding-right: 1.1rem; }
   .spec-table th { width: 42%; }
   .spec-table th, .spec-table td { padding: 0.8rem 1rem; }
+  .cert-grid { grid-template-columns: 1fr; }
 }
 
 /* ---------- Reduced motion ---------- */
@@ -531,4 +641,6 @@ em { font-style: italic; color: var(--gold-deep); }
   html { scroll-behavior: auto; }
   .marquee__track, .hero__scroll-line, .drop, .grain { animation: none !important; }
   .js .reveal, .js .split .word { opacity: 1 !important; transform: none !important; }
+  .btn__fill { transition: none !important; }
+  .js .journey__line { transform: none !important; }
 }
