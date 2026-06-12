@@ -68,27 +68,49 @@
   });
 
   /* ---------- Three.js golden particle field (home hero only) ---------- */
-  var canvas = document.getElementById('hero-canvas');
-  if (window.THREE && canvas && !prefersReduced) {
+  var canvasBack = document.getElementById('hero-canvas');
+  var canvasFront = document.getElementById('hero-canvas-front');
+  if (window.THREE && canvasBack && canvasFront && !prefersReduced) {
     try {
-      var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: false });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+      var rendererBack = new THREE.WebGLRenderer({ canvas: canvasBack, alpha: true, antialias: false });
+      rendererBack.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
 
-      var scene = new THREE.Scene();
+      var rendererFront = new THREE.WebGLRenderer({ canvas: canvasFront, alpha: true, antialias: false });
+      rendererFront.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+
+      var sceneBack = new THREE.Scene();
+      var sceneFront = new THREE.Scene();
+
       var camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
       camera.position.z = 8;
 
       var COUNT = isMobile ? 450 : 1200;
-      var positions = new Float32Array(COUNT * 3);
-      var speeds = new Float32Array(COUNT);
-      for (var i = 0; i < COUNT; i++) {
-        positions[i * 3] = (Math.random() - 0.5) * 22;     // x
-        positions[i * 3 + 1] = (Math.random() - 0.5) * 14; // y
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 10; // z
-        speeds[i] = 0.2 + Math.random() * 0.8;
+      var COUNT_BACK = Math.floor(COUNT * 0.75);
+      var COUNT_FRONT = COUNT - COUNT_BACK;
+
+      // Positions & speeds back
+      var posBack = new Float32Array(COUNT_BACK * 3);
+      var speedsBack = new Float32Array(COUNT_BACK);
+      for (var i = 0; i < COUNT_BACK; i++) {
+        posBack[i * 3] = (Math.random() - 0.5) * 22;     // x
+        posBack[i * 3 + 1] = (Math.random() - 0.5) * 14; // y
+        posBack[i * 3 + 2] = (Math.random() - 0.5) * 10; // z
+        speedsBack[i] = 0.2 + Math.random() * 0.8;
       }
-      var geo = new THREE.BufferGeometry();
-      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      var geoBack = new THREE.BufferGeometry();
+      geoBack.setAttribute('position', new THREE.BufferAttribute(posBack, 3));
+
+      // Positions & speeds front
+      var posFront = new Float32Array(COUNT_FRONT * 3);
+      var speedsFront = new Float32Array(COUNT_FRONT);
+      for (var i = 0; i < COUNT_FRONT; i++) {
+        posFront[i * 3] = (Math.random() - 0.5) * 22;     // x
+        posFront[i * 3 + 1] = (Math.random() - 0.5) * 14; // y
+        posFront[i * 3 + 2] = (Math.random() - 0.5) * 10; // z
+        speedsFront[i] = 0.2 + Math.random() * 0.8;
+      }
+      var geoFront = new THREE.BufferGeometry();
+      geoFront.setAttribute('position', new THREE.BufferAttribute(posFront, 3));
 
       // soft round sprite drawn on an offscreen canvas (no external assets)
       var spriteCanvas = document.createElement('canvas');
@@ -110,8 +132,12 @@
         blending: THREE.AdditiveBlending,
         color: 0xd4a23c
       });
-      var points = new THREE.Points(geo, mat);
-      scene.add(points);
+
+      var pointsBack = new THREE.Points(geoBack, mat);
+      sceneBack.add(pointsBack);
+
+      var pointsFront = new THREE.Points(geoFront, mat);
+      sceneFront.add(pointsFront);
 
       var mouseX = 0, mouseY = 0;
       window.addEventListener('pointermove', function (e) {
@@ -120,9 +146,12 @@
       }, { passive: true });
 
       var resize = function () {
-        var w = canvas.parentElement.clientWidth;
-        var h = canvas.parentElement.clientHeight;
-        renderer.setSize(w, h, false);
+        var w = canvasBack.parentElement.clientWidth;
+        var h = canvasBack.parentElement.clientHeight;
+        
+        rendererBack.setSize(w, h, false);
+        rendererFront.setSize(w, h, false);
+        
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
       };
@@ -134,21 +163,34 @@
       if ('IntersectionObserver' in window) {
         new IntersectionObserver(function (entries) {
           heroVisible = entries[0].isIntersecting;
-        }).observe(canvas);
+        }).observe(canvasBack);
       }
 
       (function animate() {
         requestAnimationFrame(animate);
         if (!heroVisible) return; // pause off-screen for performance
         var t = clock.getElapsedTime();
-        var pos = geo.attributes.position.array;
-        for (var j = 0; j < COUNT; j++) {
-          pos[j * 3 + 1] += Math.sin(t * speeds[j] + j) * 0.0015; // gentle drift
+        
+        // Update back particles
+        var posB = geoBack.attributes.position.array;
+        for (var j = 0; j < COUNT_BACK; j++) {
+          posB[j * 3 + 1] += Math.sin(t * speedsBack[j] + j) * 0.0015; // gentle drift
         }
-        geo.attributes.position.needsUpdate = true;
-        points.rotation.y = t * 0.03 + mouseX * 0.08;
-        points.rotation.x = mouseY * 0.05;
-        renderer.render(scene, camera);
+        geoBack.attributes.position.needsUpdate = true;
+        pointsBack.rotation.y = t * 0.03 + mouseX * 0.08;
+        pointsBack.rotation.x = mouseY * 0.05;
+
+        // Update front particles
+        var posF = geoFront.attributes.position.array;
+        for (var k = 0; k < COUNT_FRONT; k++) {
+          posF[k * 3 + 1] += Math.sin(t * speedsFront[k] + k) * 0.0015; // gentle drift
+        }
+        geoFront.attributes.position.needsUpdate = true;
+        pointsFront.rotation.y = t * 0.03 + mouseX * 0.08;
+        pointsFront.rotation.x = mouseY * 0.05;
+
+        rendererBack.render(sceneBack, camera);
+        rendererFront.render(sceneFront, camera);
       })();
     } catch (err) {
       console.warn('Hero canvas disabled:', err);
@@ -183,7 +225,10 @@
       .from('.hero__sub, .hero__actions', {
         y: 24, opacity: 0, duration: 0.8, ease: 'power3.out', stagger: 0.12
       }, '-=0.6')
-      .from('.header', { y: -20, opacity: 0, duration: 0.6, ease: 'power2.out' }, '-=0.8');
+      .from('.header', { y: -20, opacity: 0, duration: 0.6, ease: 'power2.out' }, '-=0.8')
+      .eventCallback("onComplete", function () {
+        ScrollTrigger.refresh();
+      });
   } else if (document.querySelector('.page-hero')) {
     // Inner pages: simple hero intro
     gsap.timeline()
@@ -248,4 +293,39 @@
       scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }
     });
   }
+  // Button hover ripple fill effect
+  document.querySelectorAll('.btn').forEach(function (btn) {
+    var textSpan = document.createElement('span');
+    textSpan.style.position = 'relative';
+    textSpan.style.zIndex = '2';
+    textSpan.style.pointerEvents = 'none';
+    textSpan.style.display = 'inline-block';
+    
+    while (btn.firstChild) {
+      textSpan.appendChild(btn.firstChild);
+    }
+    btn.appendChild(textSpan);
+
+    var fill = document.createElement('span');
+    fill.className = 'btn__fill';
+    btn.appendChild(fill);
+
+    btn.addEventListener('mouseenter', function (e) {
+      var rect = btn.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      fill.style.left = x + 'px';
+      fill.style.top = y + 'px';
+      btn.classList.add('is-hovered');
+    });
+
+    btn.addEventListener('mouseleave', function (e) {
+      var rect = btn.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      fill.style.left = x + 'px';
+      fill.style.top = y + 'px';
+      btn.classList.remove('is-hovered');
+    });
+  });
 })();
