@@ -32,22 +32,24 @@
   }
 
   /* ---------- Header on scroll ---------- */
+  /* Three states:
+     - top of hero: fully transparent (no class)
+     - scrolling over the dark hero: .is-dark (dark, semi-transparent)
+     - scrolled past the hero onto light sections: .is-scrolled (light) */
   var header = document.getElementById('header');
   if (header) {
-    // Stay transparent while the dark hero / page-hero is behind the header;
-    // switch to the light scrolled style only once it has scrolled past.
-    var darkSection = document.querySelector('.hero') || document.querySelector('.page-hero');
+    var hero = document.querySelector('.hero, .page-hero');
     var onScroll = function () {
-      var scrolled;
-      if (darkSection) {
-        scrolled = darkSection.getBoundingClientRect().bottom <= header.offsetHeight;
-      } else {
-        scrolled = window.scrollY > 40;
-      }
-      header.classList.toggle('is-scrolled', scrolled);
+      var y = window.scrollY;
+      // Bottom of the dark hero/page-hero section, minus the header height
+      var heroBottom = hero ? hero.offsetTop + hero.offsetHeight - header.offsetHeight : 0;
+      var pastHero = hero ? y >= heroBottom : y > 40;
+      var scrolled = y > 40;
+      header.classList.toggle('is-scrolled', pastHero);
+      header.classList.toggle('is-dark', scrolled && !pastHero);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
+    window.addEventListener('resize', onScroll, { passive: true });
     onScroll();
   }
 
@@ -359,13 +361,11 @@
     });
   }
 
-  // Hero content drifts up slightly as you leave (home only) —
-  // starts only after 40% of the hero has scrolled past, so the headline
-  // doesn't fade while the dark hero section is still on screen
+  // Hero content drifts up slightly as you leave (home only)
   if (document.querySelector('.hero')) {
     gsap.to('.hero__inner', {
       yPercent: -12, opacity: 0.4, ease: 'none',
-      scrollTrigger: { trigger: '.hero', start: '40% top', end: 'bottom top', scrub: true }
+      scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }
     });
   }
 })();
