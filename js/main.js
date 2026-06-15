@@ -270,10 +270,9 @@
       .to('.loader__word', { opacity: 1, duration: 0.4 })
       .to(loader, { yPercent: -100, duration: 0.8, ease: 'power3.inOut', delay: 0.3 })
       .set(loader, { display: 'none' })
-      .from('.hero__eyebrow span', { yPercent: 120, duration: 0.7, ease: 'power3.out' }, '-=0.4')
       .from('#hero-title .line', {
         yPercent: 110, duration: 1, ease: 'power4.out', stagger: 0.12
-      }, '-=0.5')
+      }, '-=0.4')
       .from('.hero__sub, .hero__actions', {
         y: 24, opacity: 0, duration: 0.8, ease: 'power3.out', stagger: 0.12
       }, '-=0.6')
