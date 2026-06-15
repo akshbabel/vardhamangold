@@ -1,0 +1,27 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+  <!-- Wreath circle -->
+  <g fill="#B8956F" opacity="0.9">
+    <!-- Left wheat -->
+    <path d="M 50 100 Q 40 90 35 75 Q 38 85 42 95 Q 45 100 50 100"/>
+    <path d="M 55 95 Q 45 80 40 60 Q 45 75 52 90 Q 55 95 55 95"/>
+    <path d="M 60 85 Q 50 65 48 45 Q 54 65 62 85 Q 62 85 60 85"/>
+    <path d="M 65 70 Q 55 50 55 30 Q 63 52 70 72 Q 67 70 65 70"/>
+    
+    <!-- Right wheat -->
+    <path d="M 150 100 Q 160 90 165 75 Q 162 85 158 95 Q 155 100 150 100"/>
+    <path d="M 145 95 Q 155 80 160 60 Q 155 75 148 90 Q 145 95 145 95"/>
+    <path d="M 140 85 Q 150 65 152 45 Q 146 65 138 85 Q 138 85 140 85"/>
+    <path d="M 135 70 Q 145 50 145 30 Q 137 52 130 72 Q 133 70 135 70"/>
+    
+    <!-- Bottom left -->
+    <path d="M 60 130 Q 50 135 40 145 Q 50 140 62 135 Q 62 132 60 130"/>
+    <path d="M 55 145 Q 42 155 35 170 Q 48 160 58 150 Q 58 147 55 145"/>
+    
+    <!-- Bottom right -->
+    <path d="M 140 130 Q 150 135 160 145 Q 150 140 138 135 Q 138 132 140 130"/>
+    <path d="M 145 145 Q 158 155 165 170 Q 152 160 142 150 Q 142 147 145 145"/>
+  </g>
+  
+  <!-- Checkmark V -->
+  <path d="M 70 110 L 90 130 L 135 75" stroke="#2D1810" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
